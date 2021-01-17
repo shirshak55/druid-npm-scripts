@@ -1,6 +1,7 @@
 use druid::{
     text::{EditableText, TextStorage},
     widget::prelude::*,
+    WindowSizePolicy,
 };
 use druid::{
     widget::{CrossAxisAlignment, Flex, Label, MainAxisAlignment, TextBox},
@@ -60,18 +61,17 @@ fn build_root_widget() -> impl Widget<HelloState> {
     let start_button = Label::new("Start")
         .with_text_size(20.)
         .with_text_alignment(TextAlignment::Center)
+        .with_text_color(Color::WHITE)
         .align_horizontal(UnitPoint::CENTER)
         .background(Color::TEAL)
         .fix_width(105.)
         .on_click(move |_ctx, data: &mut HelloState, _env| {
-            let output = Command::new("npm")
+            let _ = Command::new("npm")
                 .current_dir(std::env::current_dir().unwrap())
                 .arg("start")
                 .arg(get_args(data))
                 .output()
-                .expect("failed to execute process");
-
-            println!("{}", String::from_utf8_lossy(&output.stdout));
+                .map(|output| println!("{}", String::from_utf8_lossy(&output.stdout)));
         });
 
     let flex = Flex::column()
@@ -100,20 +100,22 @@ fn input_box<T: Lens<U, V> + 'static, U: Data, V: EditableText + TextStorage>(
 ) -> impl Widget<U> {
     let label = Label::new(label)
         .with_text_size(16.0)
-        .with_text_alignment(TextAlignment::Center)
-        .fix_width(105.)
-        .padding(10.0);
+        .with_text_color(Color::WHITE)
+        .center()
+        .expand_width();
 
     let textbox = TextBox::new()
         .with_placeholder(value)
         .with_text_size(16.0)
         .with_text_alignment(TextAlignment::Center)
+        .with_text_color(Color::WHITE)
+        .expand_width()
         .lens(state);
 
     Flex::row()
-        .with_child(label)
+        .with_flex_child(label, 1.0)
         .with_spacer(VERTICAL_WIDGET_SPACING)
-        .with_child(textbox)
+        .with_flex_child(textbox, 1.0)
         .cross_axis_alignment(CrossAxisAlignment::Center)
         .main_axis_alignment(MainAxisAlignment::Center)
         .must_fill_main_axis(true)
