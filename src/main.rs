@@ -1,7 +1,8 @@
+#![windows_subsystem = "windows"]
+
 use druid::{
     text::{EditableText, TextStorage},
     widget::prelude::*,
-    WindowSizePolicy,
 };
 use druid::{
     widget::{CrossAxisAlignment, Flex, Label, MainAxisAlignment, TextBox},
@@ -61,19 +62,24 @@ fn build_root_widget() -> impl Widget<HelloState> {
     let start_button = Label::new("Start")
         .with_text_size(20.)
         .with_text_color(Color::WHITE)
-        .with_text_alignment(TextAlignment::Center)
         .padding(10.)
         .background(Color::TEAL)
         .align_horizontal(UnitPoint::CENTER)
         .expand_width()
         .on_click(move |_ctx, data: &mut HelloState, _env| {
-            let _ = Command::new("npm")
-                .current_dir(std::env::current_dir().unwrap())
+            // dbg!(std::env::vars().collect::<Vec<_>>());
+            // let _ = Command::new("which")
+            //     .arg("npm")
+            //     .output()
+            //     .map(|output| println!("{}", String::from_utf8_lossy(&output.stdout)))
+            //     .map_err(|err| dbg!(err));
+
+            let _ = Command::new("cmd")
+                .arg("/C")
+                .arg("npm")
                 .arg("start")
                 .arg(get_args(data))
-                .output()
-                .map(|output| println!("{}", String::from_utf8_lossy(&output.stdout)))
-                .map_err(|err| dbg!(err));
+                .spawn();
         });
 
     let flex = Flex::column()
