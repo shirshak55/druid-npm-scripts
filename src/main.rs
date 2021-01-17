@@ -1,32 +1,37 @@
 #![windows_subsystem = "windows"]
 
+use druid::{text::EditableText, widget::prelude::*};
+
+use druid::text::TextStorage;
 use druid::{
-    text::{EditableText, TextStorage},
-    widget::prelude::*,
-};
-use druid::{
-    widget::{CrossAxisAlignment, Flex, Label, MainAxisAlignment, TextBox},
+    widget::{CrossAxisAlignment, Flex, Label, LineBreaking, MainAxisAlignment, Scroll, TextBox},
     Color,
 };
 use druid::{AppLauncher, Data, Lens, TextAlignment, UnitPoint, WidgetExt, WindowDesc};
 use std::process::Command;
 
 const TITLE: &str = "s55";
-const VERTICAL_WIDGET_SPACING: f64 = 20.0;
+const VERTICAL_WIDGET_SPACING: f64 = 10.0;
 
-#[derive(Debug, Clone, Data, Lens)]
-struct HelloState {
+#[derive(Debug, Eq, PartialEq, Clone, Data, Lens)]
+struct AppState {
     start: String,
     end: String,
     question: String,
+    maximum_browser: String,
+    minimum_browser: String,
+    link: String,
 }
 
-impl HelloState {
+impl AppState {
     fn new() -> Self {
         Self {
             start: "2".into(),
-            end: "30".into(),
+            end: "9999".into(),
             question: "40".into(),
+            maximum_browser: "20".into(),
+            minimum_browser: "10".into(),
+            link: "https://jsonip.com".into(),
         }
     }
 }
@@ -34,30 +39,37 @@ impl HelloState {
 pub fn main() {
     let main_window = WindowDesc::new(build_root_widget)
         .title(TITLE)
-        .window_size((400.0, 400.0));
+        .window_size((500.0, 500.0));
 
     AppLauncher::with_window(main_window)
         .use_simple_logger()
-        .launch(HelloState::new())
+        .launch(AppState::new())
         .expect("Failed to launch application");
 }
 
-fn build_root_widget() -> impl Widget<HelloState> {
+fn build_root_widget() -> impl Widget<AppState> {
     let cwd = std::env::current_dir().unwrap();
     let cwd = cwd.to_string_lossy();
 
     let path = Label::new(format!(r##"{}"##, cwd));
 
-    let get_args = |data: &HelloState| {
-        format!(
-            r##"{} {} --question="{}""##,
-            data.start, data.end, data.question
-        )
-    };
-
-    let generated_commands = Label::new(move |data: &HelloState, _env: &Env| {
-        format!(r##"npm start {}"##, get_args(data))
-    });
+    let generated_commands = Scroll::new(
+        Label::new(  move |data: &AppState, _env: &Env| {
+            format!(
+            r##"yarn start {} {} --question={} --maximum-browser={} --minimum-browser={} --link='{}'"##,
+            data.start,
+            data.end,
+            data.question,
+            data.maximum_browser,
+            data.minimum_browser,
+            data.link)
+        })
+            .with_text_color(Color::WHITE)
+            .with_line_break_mode(LineBreaking::WordWrap)
+            .expand_width()
+            .padding((8. * 4.0, 8.))
+    )
+    .vertical();
 
     let start_button = Label::new("Start")
         .with_text_size(20.)
@@ -66,19 +78,17 @@ fn build_root_widget() -> impl Widget<HelloState> {
         .background(Color::TEAL)
         .align_horizontal(UnitPoint::CENTER)
         .expand_width()
-        .on_click(move |_ctx, data: &mut HelloState, _env| {
-            // dbg!(std::env::vars().collect::<Vec<_>>());
-            // let _ = Command::new("which")
-            //     .arg("npm")
-            //     .output()
-            //     .map(|output| println!("{}", String::from_utf8_lossy(&output.stdout)))
-            //     .map_err(|err| dbg!(err));
-
+        .on_click(move |_ctx, data: &mut AppState, _env| {
             let _ = Command::new("cmd")
                 .arg("/C")
-                .arg("npm")
+                .arg("yarn")
                 .arg("start")
-                .arg(get_args(data))
+                .arg(&data.start)
+                .arg(&data.end)
+                .arg(&format!("--question={}", data.question))
+                .arg(&format!("--maximum-browser={}", data.maximum_browser))
+                .arg(&format!("--minimum-browser={}", data.minimum_browser))
+                .arg(&format!("--link='{}'", data.link))
                 .spawn();
         });
 
@@ -86,11 +96,25 @@ fn build_root_widget() -> impl Widget<HelloState> {
         .must_fill_main_axis(true)
         .main_axis_alignment(MainAxisAlignment::Center)
         .with_spacer(VERTICAL_WIDGET_SPACING)
-        .with_child(input_box("Start", "10", HelloState::start))
+        .with_child(input_box("Start", "10", AppState::start))
         .with_spacer(VERTICAL_WIDGET_SPACING)
-        .with_child(input_box("End", "22", HelloState::end))
+        .with_child(input_box("End", "22", AppState::end))
         .with_spacer(VERTICAL_WIDGET_SPACING)
-        .with_child(input_box("Question Answer", "2", HelloState::question))
+        .with_child(input_box("Question Answer", "2", AppState::question))
+        .with_spacer(VERTICAL_WIDGET_SPACING)
+        .with_child(input_box(
+            "Maximum Browser",
+            "20",
+            AppState::maximum_browser,
+        ))
+        .with_spacer(VERTICAL_WIDGET_SPACING)
+        .with_child(input_box(
+            "Minimum Browser",
+            "10",
+            AppState::minimum_browser,
+        ))
+        .with_spacer(VERTICAL_WIDGET_SPACING)
+        .with_child(input_box("Link", "https://jsonip.com", AppState::link))
         .with_spacer(VERTICAL_WIDGET_SPACING)
         .with_child(path)
         .with_spacer(VERTICAL_WIDGET_SPACING)
@@ -121,10 +145,11 @@ fn input_box<T: Lens<U, V> + 'static, U: Data, V: EditableText + TextStorage>(
         .lens(state);
 
     Flex::row()
-        .with_flex_child(label, 1.0)
+        .with_flex_child(label, 0.5)
         .with_spacer(VERTICAL_WIDGET_SPACING)
         .with_flex_child(textbox, 1.0)
         .cross_axis_alignment(CrossAxisAlignment::Center)
         .main_axis_alignment(MainAxisAlignment::Center)
+        .with_spacer(VERTICAL_WIDGET_SPACING)
         .must_fill_main_axis(true)
 }
