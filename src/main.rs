@@ -61,17 +61,19 @@ fn build_root_widget() -> impl Widget<HelloState> {
     let start_button = Label::new("Start")
         .with_text_size(20.)
         .with_text_color(Color::WHITE)
-        .background(Color::TEAL)
         .with_text_alignment(TextAlignment::Center)
+        .padding(10.)
+        .background(Color::TEAL)
         .align_horizontal(UnitPoint::CENTER)
-        .fix_width(105.)
+        .expand_width()
         .on_click(move |_ctx, data: &mut HelloState, _env| {
             let _ = Command::new("npm")
                 .current_dir(std::env::current_dir().unwrap())
                 .arg("start")
                 .arg(get_args(data))
                 .output()
-                .map(|output| println!("{}", String::from_utf8_lossy(&output.stdout)));
+                .map(|output| println!("{}", String::from_utf8_lossy(&output.stdout)))
+                .map_err(|err| dbg!(err));
         });
 
     let flex = Flex::column()
@@ -88,7 +90,7 @@ fn build_root_widget() -> impl Widget<HelloState> {
         .with_spacer(VERTICAL_WIDGET_SPACING)
         .with_child(generated_commands)
         .with_spacer(VERTICAL_WIDGET_SPACING)
-        .with_child(start_button);
+        .with_flex_child(start_button, 0.4);
 
     flex
 }
