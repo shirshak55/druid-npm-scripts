@@ -1,0 +1,8 @@
+[package]
+name = "Driod Example"
+version = "0.1.0"
+authors = ["Shirshak55 <shirshak55@pm.me>"]
+edition = "2018"
+
+[dependencies]
+druid = { git = "https://github.com/linebender/druid.git",rev="5ec55e5db8242830587890e0a7f93096c7c17cb0" }

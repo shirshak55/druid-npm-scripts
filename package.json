@@ -1,0 +1,6 @@
+{
+  "name": "s55gui",
+  "scripts": {
+    "start": "node start.js"
+  }
+}
