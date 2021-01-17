@@ -60,10 +60,10 @@ fn build_root_widget() -> impl Widget<HelloState> {
 
     let start_button = Label::new("Start")
         .with_text_size(20.)
-        .with_text_alignment(TextAlignment::Center)
         .with_text_color(Color::WHITE)
-        .align_horizontal(UnitPoint::CENTER)
         .background(Color::TEAL)
+        .with_text_alignment(TextAlignment::Center)
+        .align_horizontal(UnitPoint::CENTER)
         .fix_width(105.)
         .on_click(move |_ctx, data: &mut HelloState, _env| {
             let _ = Command::new("npm")
