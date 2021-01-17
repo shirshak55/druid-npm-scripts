@@ -238,7 +238,7 @@ checksum = "212d0f5754cb6769937f4501cc0e67f4f4483c8d2c3e1e922ee9edbe4ab4c7c0"
 [[package]]
 name = "druid"
 version = "0.7.0"
-source = "git+https://github.com/linebender/druid.git#5ec55e5db8242830587890e0a7f93096c7c17cb0"
+source = "git+https://github.com/linebender/druid.git?rev=5ec55e5db8242830587890e0a7f93096c7c17cb0#5ec55e5db8242830587890e0a7f93096c7c17cb0"
 dependencies = [
  "console_log",
  "druid-derive",
@@ -258,7 +258,7 @@ dependencies = [
 [[package]]
 name = "druid-derive"
 version = "0.4.0"
-source = "git+https://github.com/linebender/druid.git#5ec55e5db8242830587890e0a7f93096c7c17cb0"
+source = "git+https://github.com/linebender/druid.git?rev=5ec55e5db8242830587890e0a7f93096c7c17cb0#5ec55e5db8242830587890e0a7f93096c7c17cb0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -268,7 +268,7 @@ dependencies = [
 [[package]]
 name = "druid-shell"
 version = "0.7.0"
-source = "git+https://github.com/linebender/druid.git#5ec55e5db8242830587890e0a7f93096c7c17cb0"
+source = "git+https://github.com/linebender/druid.git?rev=5ec55e5db8242830587890e0a7f93096c7c17cb0#5ec55e5db8242830587890e0a7f93096c7c17cb0"
 dependencies = [
  "anyhow",
  "bitflags",
@@ -300,6 +300,13 @@ dependencies = [
  "web-sys",
  "winapi",
  "wio",
+]
+
+[[package]]
+name = "druid_example"
+version = "0.1.0"
+dependencies = [
+ "druid",
 ]
 
 [[package]]
@@ -1051,13 +1058,6 @@ name = "ryu"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "71d301d4193d031abdd79ff7e3dd721168a9572ef3fe51a1517aba235bd8f86e"
-
-[[package]]
-name = "s55gui"
-version = "0.1.0"
-dependencies = [
- "druid",
-]
 
 [[package]]
 name = "scopeguard"

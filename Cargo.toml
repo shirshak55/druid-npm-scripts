@@ -1,5 +1,5 @@
 [package]
-name = "Driod Example"
+name = "druid_example"
 version = "0.1.0"
 authors = ["Shirshak55 <shirshak55@pm.me>"]
 edition = "2018"
